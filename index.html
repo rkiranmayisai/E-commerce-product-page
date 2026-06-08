@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura E-Commerce Store - Premium Shopping</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Premium Ambient Orbs -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+
+
+  <!-- ==========================================================================
+       Navigation Bar
+       ========================================================================== -->
+  <header class="glass-panel">
+    <a href="#" class="logo">
+      <div class="logo-icon">A</div>
+      <span>AURA SHOP</span>
+    </a>
+    
+    <div class="header-actions">
+      <!-- Search Input -->
+      <div class="search-box-container">
+        <input type="text" id="store-search" placeholder="Search premium products...">
+        <button class="voice-search-btn" id="voice-search-trigger" title="Voice Search">🎤</button>
+        <button class="search-icon-btn">🔍</button>
+      </div>
+
+      <!-- Visual Search Button -->
+      <button class="action-btn" id="visual-search-btn" title="Visual Search (Upload Image)">📷</button>
+
+      <!-- Theme Switcher -->
+      <button class="action-btn" id="theme-toggle-btn" title="Toggle Light/Dark Theme">🌓</button>
+
+      <!-- Rewards Point Dashboard -->
+      <div class="rewards-dashboard-panel" id="rewards-dashboard-trigger" title="Loyalty Points Dashboard" style="display:flex; align-items:center; gap:8px; background:var(--bg-tertiary); padding:6px 14px; border-radius:30px; border:1px solid var(--border-color); font-size:12px; font-weight:700; cursor:pointer;">
+        <span style="font-size:15px;">👑</span>
+        <div>
+          <div style="font-size:10px; color:var(--text-muted); line-height:1;">Kiran R</div>
+          <div><span id="rewards-points-display" style="color:var(--primary-color);">12,450</span> pts</div>
+        </div>
+      </div>
+
+      <!-- Spin-to-Win Wheel Launcher -->
+      <button class="action-btn" id="spin-wheel-trigger-btn" title="Spin Wheel Promotions" style="background:linear-gradient(135deg, #ec4899 0%, #f43f5e 100%); color:white;">🎡</button>
+
+      <!-- Wishlist Toggle -->
+      <button class="action-btn" id="wishlist-toggle-btn" title="View Wishlist">
+        ❤️
+        <span class="badge" id="wishlist-badge-count">0</span>
+      </button>
+
+      <!-- Shopping Cart Toggle -->
+      <button class="action-btn" id="cart-toggle-btn" title="View Cart">
+        🛒
+        <span class="badge" id="cart-badge-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       Hero Welcome Section
+       ========================================================================== -->
+  <section class="hero">
+    <div class="hero-banner">
+      <div class="hero-content">
+        <span class="hero-tagline">Kiran's Dashboard</span>
+        <h2>Welcome Back to Aura Shop</h2>
+        <p>Explore high-fidelity items integrated with interactive price predictions, real-time fraud alerts, and AR product placement tools. Try clicking on items, utilizing our visual search, or asking Aura for a discount coupon!</p>
+        <div class="hero-buttons">
+          <button class="btn-primary" onclick="document.getElementById('cat-furniture').click()">Explore Furniture</button>
+          <button class="btn-secondary" id="hero-offer-btn">Personalized Offers</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       Category Tabs
+       ========================================================================== -->
+  <nav class="category-tabs">
+    <button class="cat-tab active" data-category="all" id="cat-all">📦 All Products</button>
+    <button class="cat-tab" data-category="electronics" id="cat-electronics">⚡ Electronics</button>
+    <button class="cat-tab" data-category="furniture" id="cat-furniture">🛋️ Furniture</button>
+    <button class="cat-tab" data-category="fashion" id="cat-fashion">👟 Fashion</button>
+    <button class="cat-tab" data-category="smarthome" id="cat-smarthome">🏠 Smart Home</button>
+  </nav>
+
+  <!-- ==========================================================================
+       Product Catalog Grid
+       ========================================================================== -->
+  <main class="store-container">
+    <div class="product-grid" id="main-product-grid">
+      <!-- Dynamically filled with app.js -->
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       Product Details Modal Overlay
+       ========================================================================== -->
+  <div class="modal-overlay" id="details-modal-overlay">
+    <div class="details-modal">
+      <button class="close-modal-btn" id="close-details-btn">&times;</button>
+      
+      <div class="modal-body">
+        <!-- Left Column (Images Gallery) -->
+        <div class="modal-left-col">
+          <div class="gallery-main-img" id="gallery-zoom-container">
+            <img id="detail-main-img" src="" alt="Main product">
+          </div>
+          <div class="gallery-thumbnails" id="detail-thumbnails-grid">
+            <!-- Thumbs dynamically added -->
+          </div>
+        </div>
+        
+        <!-- Right Column (Product Data / Features) -->
+        <div class="modal-right-col">
+          <div class="detail-header">
+            <div class="card-category" id="detail-category">Category</div>
+            <h1 class="detail-title" id="detail-title">Product Name</h1>
+            <div class="card-rating" id="detail-stars-row">
+              <!-- Stars + score -->
+            </div>
+            <div class="inventory-pill" id="detail-stock-pill">In Stock</div>
+          </div>
+
+          <div class="detail-price-row" style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+            <span class="detail-price" id="detail-price">$0.00</span>
+            <span class="inventory-pill stock-low hidden" id="detail-dynamic-price-tag" style="margin-top:0; font-size:10px;">⚡ High Demand (+2% dynamic adjustment)</span>
+          </div>
+
+          <p class="detail-desc" id="detail-desc">Description text...</p>
+
+          <!-- Interactive Action Controls -->
+          <div class="purchase-row">
+            <div class="qty-selector">
+              <button class="qty-btn" id="qty-minus">-</button>
+              <span class="qty-val" id="qty-display">1</span>
+              <button class="qty-btn" id="qty-plus">+</button>
+            </div>
+            
+            <div class="btn-purchase-actions">
+              <button class="btn-primary" id="detail-add-cart-btn">🛒 Add to Cart</button>
+              <button class="btn-secondary" id="detail-compare-btn">🔄 Compare</button>
+              <button class="btn-secondary" id="detail-ar-btn">🕶️ AR Preview</button>
+            </div>
+          </div>
+
+          <!-- Price History Chart -->
+          <div class="price-history-section" id="detail-price-tracker-container">
+            <!-- Svg graphs added via priceTracker.js -->
+          </div>
+
+          <!-- Specs and Features Accordions -->
+          <div class="details-tabs">
+            <div class="tab-accordion">
+              <div class="tab-accordion-header" id="blockchain-acc-btn">
+                <span>🔗 Blockchain Verification Ledger</span>
+                <span class="acc-chevron">➕</span>
+              </div>
+              <div class="tab-accordion-content" id="blockchain-acc-content">
+                <div class="blockchain-ledger-box" style="background:var(--bg-tertiary); padding:15px; border-radius:var(--radius-sm); border:1px solid var(--border-color); font-size:12px; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+                  <div><strong>Ledger Block Height:</strong> <span id="ledger-block-height">Loading...</span></div>
+                  <div style="word-break: break-all;"><strong>Cryptographic Hash (SHA-256):</strong> <span id="ledger-block-hash">Loading...</span></div>
+                  <div><strong>Genesis Origin:</strong> <span id="ledger-origin">Loading...</span></div>
+                  <div><strong>Ledger Status:</strong> <span class="rev-badge rev-badge-verified" style="display:inline-block;">Verified Decentralized Ledger</span></div>
+                  <button class="btn-primary" id="run-blockchain-audit-btn" style="margin-top:10px; width:100%; font-size:12px; padding:10px;">Run Cryptographic Audit</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-accordion">
+              <div class="tab-accordion-header" id="specs-acc-btn">
+                <span>Product Specifications</span>
+                <span class="acc-chevron">➕</span>
+              </div>
+              <div class="tab-accordion-content" id="specs-acc-content">
+                <table class="specs-table" id="detail-specs-table">
+                  <!-- specs rows -->
+                </table>
+              </div>
+            </div>
+
+            <div class="tab-accordion">
+              <div class="tab-accordion-header" id="features-acc-btn">
+                <span>Key Features</span>
+                <span class="acc-chevron">➕</span>
+              </div>
+              <div class="tab-accordion-content" id="features-acc-content">
+                <ul class="features-list" id="detail-features-list">
+                  <!-- features bullets -->
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Similar Recommendations Deck -->
+          <div class="recommendations-deck">
+            <h3 style="font-size:16px; margin-bottom:12px;">Similar Products You Might Like</h3>
+            <div class="vs-results-list" id="detail-similar-deck">
+              <!-- Similar cards -->
+            </div>
+          </div>
+
+          <!-- Reviews Breakdown and Customer List -->
+          <div class="reviews-section">
+            <h3 style="font-size:18px; margin-bottom:15px;">AI Review Breakdown</h3>
+            
+            <!-- AI Pros & Cons Summarizer Panel -->
+            <div class="ai-pros-cons-panel" style="background:var(--bg-tertiary); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:18px; margin-bottom:20px; box-shadow:var(--shadow-sm);">
+              <div class="ai-summary-title" style="font-weight:800; font-size:14px; color:var(--primary-color); text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:6px;">🤖 AI Summarized Pros & Cons</div>
+              <div class="pros-cons-cols" style="display:flex; gap:20px; flex-wrap:wrap;">
+                <div class="summary-col pros-col" style="flex:1; min-width:180px;">
+                  <h5 style="font-size:13px; font-weight:800; color:var(--success); margin-bottom:8px;">Pros Highlights</h5>
+                  <ul id="ai-pros-list" style="padding-left:16px; font-size:12px; color:var(--text-secondary);">
+                    <!-- dynamic pros -->
+                  </ul>
+                </div>
+                <div class="summary-col cons-col" style="flex:1; min-width:180px;">
+                  <h5 style="font-size:13px; font-weight:800; color:var(--error); margin-bottom:8px;">Cons Highlights</h5>
+                  <ul id="ai-cons-list" style="padding-left:16px; font-size:12px; color:var(--text-secondary);">
+                    <!-- dynamic cons -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="reviews-analysis-summary">
+              <div class="rev-summary-left">
+                <h4 id="review-summary-ver">100% Verified Reviews</h4>
+                <p>AI scans for spelling velocity, spam keywords, and unverified flags.</p>
+              </div>
+              <div class="sentiment-bar-wrapper">
+                <span style="font-size:11px; font-weight:700;">Sentiment</span>
+                <div class="sentiment-bar">
+                  <div class="sent-fill-pos" id="sent-bar-pos" style="width: 80%"></div>
+                  <div class="sent-fill-neg" id="sent-bar-neg" style="width: 20%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="reviews-list-container">
+              <!-- Customer reviews -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       AR Product View Modal
+       ========================================================================== -->
+  <div class="modal-overlay" id="ar-modal-overlay">
+    <div class="details-modal ar-modal">
+      <button class="close-modal-btn" id="close-ar-btn">&times;</button>
+      <div id="ar-viewport-container" style="width: 100%; height: 100%;">
+        <!-- Injected by ar.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       Visual Search Upload Modal
+       ========================================================================== -->
+  <div class="modal-overlay" id="vs-modal-overlay">
+    <div class="details-modal" style="max-width: 650px; height: auto; max-height: 90vh;">
+      <button class="close-modal-btn" id="close-vs-btn">&times;</button>
+      <div class="vs-modal-body">
+        <h2>AI Visual Product Search</h2>
+        <p style="font-size: 13px; color: var(--text-secondary);">Upload an image file (e.g. shoe, chair, headphones) and let our computer vision scan models match against similar stock items.</p>
+        
+        <div class="vs-upload-area" id="vs-drop-zone">
+          <div class="vs-upload-icon">📤</div>
+          <div class="vs-upload-text">Drag & drop your file here or click to browse</div>
+          <input type="file" id="vs-file-input" style="display: none;" accept="image/*">
+          
+          <div class="vs-preview-container hidden" id="vs-preview-box">
+            <img class="vs-preview-img" id="vs-img-el" src="" alt="preview">
+            <div class="vs-scanner-line hidden" id="vs-scanner-line"></div>
+          </div>
+        </div>
+
+        <div class="vs-matches-container hidden" id="vs-results-box">
+          <div style="font-weight: 700; font-size: 14px; margin-bottom: 10px;">
+            Scanning matches: <span id="vs-matches-tag">Furniture</span>
+          </div>
+          <div class="vs-results-list" id="vs-matches-grid">
+            <!-- matches items -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       Cart Drawer (Checkout / Fraud Scores)
+       ========================================================================== -->
+  <div class="cart-drawer" id="cart-drawer-panel">
+    <div class="cart-header">
+      <h3>Your Shopping Cart</h3>
+      <button class="close-cart-btn" id="close-cart-btn">&times;</button>
+    </div>
+    
+    <div class="cart-items-list" id="cart-items-container">
+      <!-- dynamic items -->
+    </div>
+    
+    <div class="cart-footer-panel">
+      <div class="cart-summary-row">
+        <span>Subtotal</span>
+        <span id="cart-subtotal">$0.00</span>
+      </div>
+      <div class="cart-summary-row">
+        <span>Discount (20% off applied)</span>
+        <span id="cart-discount" style="color:var(--success);">-$0.00</span>
+      </div>
+      <div class="cart-summary-row cart-summary-total">
+        <span>Total Amount</span>
+        <span id="cart-total">$0.00</span>
+      </div>
+      
+      <div class="cart-discount-input">
+        <input type="text" id="coupon-code-input" placeholder="Enter coupon code...">
+        <button id="apply-coupon-btn">Apply</button>
+      </div>
+
+      <!-- Fraud Detection Secure Check System Form -->
+      <div class="checkout-panel">
+        <div class="checkout-shield" id="checkout-shield-bar">
+          🛡️ AI Fraud Risk Score Analyser
+        </div>
+        
+        <div class="checkout-input-row">
+          <label>Email Address</label>
+          <input type="email" id="checkout-email" value="kiran@gmail.com">
+        </div>
+        
+        <div class="checkout-input-row">
+          <label>Credit Card Number</label>
+          <input type="text" id="checkout-card" placeholder="xxxx xxxx xxxx xxxx" value="4111 2222 3333 4444">
+        </div>
+
+        <div class="checkout-input-row">
+          <label>Cardholder Name</label>
+          <input type="text" id="checkout-card-name" value="Kiran R">
+        </div>
+
+        <div class="checkout-input-row">
+          <label>Shipping Destination</label>
+          <select id="checkout-shipping">
+            <option value="us">United States</option>
+            <option value="in" selected>India</option>
+            <option value="uk">United Kingdom</option>
+          </select>
+        </div>
+
+        <div class="checkout-input-row">
+          <label>Billing Country (Card Origin)</label>
+          <select id="checkout-billing">
+            <option value="us">United States</option>
+            <option value="in" selected>India</option>
+            <option value="uk">United Kingdom</option>
+          </select>
+        </div>
+
+        <div class="checkout-input-row" style="flex-direction:row; justify-content:space-between; align-items:center;">
+          <label for="checkout-vpn" style="cursor:pointer;">Simulate proxy connection (VPN)</label>
+          <input type="checkbox" id="checkout-vpn" style="width:18px; height:18px;">
+        </div>
+
+        <div class="fraud-sec-box">
+          <div class="fraud-score-hud">
+            <span>Fraud Risk Score</span>
+            <span id="fraud-score-percent" style="font-weight:800; color:var(--success);">0%</span>
+          </div>
+          <div class="fraud-progress-bg">
+            <div class="fraud-progress-fill" id="fraud-score-fill"></div>
+          </div>
+          <div id="fraud-advisor-msg" style="font-size: 10px; margin-top: 5px; color: var(--text-secondary);">
+            Risk low: billing matching account records.
+          </div>
+        </div>
+
+        <button class="btn-primary" id="place-order-btn" style="width:100%; margin-top:5px;">Securely Purchase</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       Product Comparison Drawer Bar
+       ========================================================================== -->
+  <div class="compare-drawer" id="compare-drawer-panel">
+    <div class="compare-header">
+      <span style="font-weight:700; font-size:14px;">Product Comparison Shelf</span>
+      <button class="close-cart-btn" id="close-compare-btn" style="font-size:14px;">Clear & Close</button>
+    </div>
+    <div class="compare-grid" id="compare-grid-slots">
+      <!-- dynamic compare templates -->
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       AI Chatbot UI Widget
+       ========================================================================== -->
+  <div class="chatbot-bubble" id="chat-bubble" title="Talk to Aura AI">💬</div>
+  
+  <div class="chatbot-window glass-panel" id="chat-window-panel">
+    <div class="chat-header">
+      <div class="chat-bot-identity">
+        <div class="chat-bot-avatar">🤖</div>
+        <div>
+          <div class="chat-bot-name">Aura AI</div>
+          <div style="font-size: 9px; opacity:0.8;">Online Shopping Assistant</div>
+        </div>
+      </div>
+      <button class="chat-close-btn" id="close-chat-window-btn">&times;</button>
+    </div>
+
+    <div class="chat-messages" id="chat-messages-container">
+      <!-- Message list -->
+    </div>
+
+    <!-- Suggestion Chips -->
+    <div class="chat-suggestions">
+      <button class="chat-chip" onclick="sendChatQuery('Recommend the best smart chair')">🛋️ Tell me about the smart chair</button>
+      <button class="chat-chip" onclick="sendChatQuery('Are there any active discounts?')">🎟️ Ask for coupon discounts</button>
+      <button class="chat-chip" onclick="sendChatQuery('How does AR preview work?')">🕶️ AR Product Preview info</button>
+      <button class="chat-chip" onclick="sendChatQuery('Check fraud security status')">🛡️ Verify security protocols</button>
+    </div>
+
+    <form class="chat-input-form" id="chat-input-form">
+      <button type="button" class="chat-voice-btn" id="chat-voice-trigger" title="Voice Input">🎤</button>
+      <input type="text" id="chat-user-input" placeholder="Ask Aura about products, discounts...">
+      <button type="submit" class="chat-submit-btn">➡️</button>
+    </form>
+  </div>
+
+  <!-- ==========================================================================
+       Spin-to-Win Modal Overlay
+       ========================================================================== -->
+  <div class="modal-overlay" id="spin-modal-overlay">
+    <div class="details-modal" style="max-width: 420px; height: auto; max-height: 90vh;">
+      <button class="close-modal-btn" id="close-spin-btn">&times;</button>
+      <div class="vs-modal-body" style="padding: 30px; display:flex; flex-direction:column; align-items:center; gap:15px; text-align:center;">
+        <h2 style="margin-bottom: 2px;">Aura Promo Wheel</h2>
+        <p style="font-size:12px; color:var(--text-secondary); margin-bottom:15px;">Spin the wheel to win discount coupons and checkout bonuses!</p>
+        
+        <div class="wheel-outer-wrapper" style="position:relative; width: 260px; height: 260px; margin: 0 auto 10px auto;">
+          <canvas id="wheel-canvas" width="260" height="260" style="border-radius:50%; box-shadow: var(--shadow-lg); transition: transform 4s cubic-bezier(0.1, 0.8, 0.25, 1);"></canvas>
+          <div class="wheel-pointer" style="position:absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 20px solid var(--error); z-index: 10;"></div>
+        </div>
+
+        <button class="btn-primary" id="spin-wheel-action-btn" style="width:100%; font-size:15px; justify-content:center;">🎡 Spin to Win</button>
+        <div id="spin-result-msg" style="margin-top: 10px; font-weight:800; font-size:14px; color:var(--success); min-height: 20px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       Script Inclusions
+       ========================================================================== -->
+  <script src="data.js"></script>
+  <script src="recommendations.js"></script>
+  <script src="priceTracker.js"></script>
+  <script src="ar.js"></script>
+  <script src="fraudDetector.js"></script>
+  <script src="visualSearch.js"></script>
+  <script src="chatbot.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
