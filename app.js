@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentSpinAngle = 0;
 
   // Instantiate Modules
-  const chatbot = new ShoppingChatbot();
   const recommender = new RecommendationEngine();
   const arViewer = new ARViewer("ar-viewport-container");
   const fraudDetector = new FraudDetector();
@@ -31,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Core UI Elements
   const productGrid = document.getElementById("main-product-grid");
   const searchInput = document.getElementById("store-search");
-  const voiceSearchTrigger = document.getElementById("voice-search-trigger");
   const themeToggleBtn = document.getElementById("theme-toggle-btn");
   const wishlistBadge = document.getElementById("wishlist-badge-count");
   const cartBadge = document.getElementById("cart-badge-count");
@@ -100,15 +98,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const compareGridSlots = document.getElementById("compare-grid-slots");
   const closeCompareBtn = document.getElementById("close-compare-btn");
 
-  // Chatbot Elements
-  const chatBubble = document.getElementById("chat-bubble");
-  const chatWindow = document.getElementById("chat-window-panel");
-  const closeChatBtn = document.getElementById("close-chat-window-btn");
-  const chatMessagesContainer = document.getElementById("chat-messages-container");
-  const chatInputForm = document.getElementById("chat-input-form");
-  const chatUserInput = document.getElementById("chat-user-input");
-  const chatVoiceTrigger = document.getElementById("chat-voice-trigger");
-
   /* ==========================================================================
      Initialize Storefront & Themes
      ========================================================================== */
@@ -144,10 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Personalized Offers Banner Action
     document.getElementById("hero-offer-btn").addEventListener("click", () => {
-      openChatWindow();
-      // Directly invoke respond and show message
-      const reply = chatbot.respond("Are there any active discounts?");
-      renderChatMessages();
+      alert("Personalized Offer: Use code KIRAN20 at checkout for 20% off your purchase!");
     });
 
     // Accordions Toggle listeners
@@ -207,63 +193,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ==========================================================================
-     Voice Search Integration (Speech Recognition)
-     ========================================================================== */
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (SpeechRecognition) {
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
-
-    voiceSearchTrigger.addEventListener("click", () => {
-      if (voiceSearchTrigger.classList.contains("listening")) {
-        recognition.stop();
-      } else {
-        voiceSearchTrigger.classList.add("listening");
-        recognition.start();
-      }
-    });
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      const lower = transcript.toLowerCase();
-      
-      // Voice Shopping trigger: "add [item] to cart"
-      if (lower.includes("add") && (lower.includes("cart") || lower.includes("buy"))) {
-        handleVoiceShoppingAction(lower);
-      } else {
-        searchInput.value = transcript;
-        searchPhrase = lower.trim();
-        renderStoreGrid();
-      }
-    };
-
-    recognition.onend = () => {
-      voiceSearchTrigger.classList.remove("listening");
-    };
-
-    recognition.onerror = (e) => {
-      console.error("Voice recognition error", e);
-      voiceSearchTrigger.classList.remove("listening");
-    };
-  } else {
-    // Mock simulation if voice API not supported
-    voiceSearchTrigger.addEventListener("click", () => {
-      voiceSearchTrigger.classList.add("listening");
-      setTimeout(() => {
-        voiceSearchTrigger.classList.remove("listening");
-        const terms = ["chair", "headphones", "running shoes"];
-        const randTerm = terms[Math.floor(Math.random() * terms.length)];
-        searchInput.value = randTerm;
-        searchPhrase = randTerm;
-        renderStoreGrid();
-      }, 1500);
-    });
-  }
-
-  /* ==========================================================================
-     Render Storefront Catalog
+   Render Storefront Catalog
+   ========================================================================== */
      ========================================================================== */
   function renderStoreGrid() {
     productGrid.innerHTML = "";
@@ -976,200 +907,10 @@ document.addEventListener("DOMContentLoaded", () => {
     compareDrawer.classList.remove("active");
   });
 
-  /* ==========================================================================
-     AI Chatbot Interface & Logic binding
-     ========================================================================== */
-  chatBubble.addEventListener("click", openChatWindow);
-  closeChatBtn.addEventListener("click", () => {
-    chatWindow.classList.remove("active");
-  });
-
-  function openChatWindow() {
-    chatWindow.classList.add("active");
-    renderChatMessages();
-  }
-
-  function renderChatMessages() {
-    chatMessagesContainer.innerHTML = "";
-    chatbot.messages.forEach(msg => {
-      const div = document.createElement("div");
-      div.className = `chat-msg ${msg.sender}`;
-      div.innerHTML = msg.text;
-      chatMessagesContainer.appendChild(div);
-    });
-    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-  }
-
-  // Bind query sender globally
-  window.sendChatQuery = function(text) {
-    // Show user message
-    const botMsg = chatbot.respond(text);
-    renderChatMessages();
-
-    // Trigger typing delay animation
-    appendTypingIndicator();
-
-    setTimeout(() => {
-      removeTypingIndicator();
-      renderChatMessages();
-      
-      // Execute trigger actions returned in response object
-      if (botMsg.data) {
-        handleChatbotTriggers(botMsg.data);
-      }
-    }, 1200);
-  };
-
-  chatInputForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const txt = chatUserInput.value.trim();
-    if (!txt) return;
-    chatUserInput.value = "";
-    sendChatQuery(txt);
-  });
-
-  function appendTypingIndicator() {
-    removeTypingIndicator();
-    const div = document.createElement("div");
-    div.className = "chat-msg bot";
-    div.id = "chat-typing-indicator";
-    div.innerHTML = `
-      <div class="typing-indicator">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
-    `;
-    chatMessagesContainer.appendChild(div);
-    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-  }
-
-  function removeTypingIndicator() {
-    const el = document.getElementById("chat-typing-indicator");
-    if (el) el.remove();
-  }
-
-  // Handle side-effects of chatbot actions
-  function handleChatbotTriggers(data) {
-    switch(data.action) {
-      case "show_product":
-        chatWindow.classList.remove("active");
-        openDetails(data.id);
-        break;
-      case "open_cart":
-        chatWindow.classList.remove("active");
-        cartDrawer.classList.add("active");
-        renderCart();
-        break;
-      case "apply_coupon":
-        couponCode = data.coupon;
-        localStorage.setItem("aura_coupon", data.coupon);
-        couponInput.value = data.coupon;
-        renderCart();
-        break;
-      case "search_filter":
-        chatWindow.classList.remove("active");
-        searchInput.value = data.query;
-        searchPhrase = data.query.toLowerCase().trim();
-        renderStoreGrid();
-        break;
-      case "recommend":
-        // Highlight recommendations
-        break;
-    }
-  }
-
-  // Voice recognition inside Chatbot input field
-  if (SpeechRecognition) {
-    const chatSpeech = new SpeechRecognition();
-    chatSpeech.continuous = false;
-    chatSpeech.lang = "en-US";
-    chatSpeech.interimResults = false;
-
-    chatVoiceTrigger.addEventListener("click", () => {
-      if (chatVoiceTrigger.classList.contains("listening")) {
-        chatSpeech.stop();
-      } else {
-        chatVoiceTrigger.classList.add("listening");
-        chatSpeech.start();
-      }
-    });
-
-    chatSpeech.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      const lower = transcript.toLowerCase();
-      
-      if (lower.includes("add") && (lower.includes("cart") || lower.includes("buy"))) {
-        handleVoiceShoppingAction(lower);
-      } else {
-        chatUserInput.value = transcript;
-      }
-    };
-
-    chatSpeech.onend = () => {
-      chatVoiceTrigger.classList.remove("listening");
-    };
-
-    chatSpeech.onerror = (e) => {
-      console.error(e);
-      chatVoiceTrigger.classList.remove("listening");
-    };
-  } else {
-    chatVoiceTrigger.addEventListener("click", () => {
-      chatVoiceTrigger.classList.add("listening");
-      setTimeout(() => {
-        chatVoiceTrigger.classList.remove("listening");
-        chatUserInput.value = "Are there any offers?";
-      }, 1000);
-    });
-  }
-
   // Run initial calculations
   init();
   /* ==========================================================================
-     Voice Shopping Assistant Parsing Engine
-     ========================================================================== */
-  function handleVoiceShoppingAction(transcript) {
-    let matchedProduct = null;
-    const lower = transcript.toLowerCase();
-
-    // Map transcript keywords to product entries
-    if (lower.includes("jhumka") || lower.includes("earring") || lower.includes("jewelry")) {
-      if (lower.includes("oxidized") || lower.includes("silver")) {
-        matchedProduct = window.productsData.find(x => x.id === "p10");
-      } else if (lower.includes("luxury") || lower.includes("diamond")) {
-        matchedProduct = window.productsData.find(x => x.id === "p11");
-      } else {
-        matchedProduct = window.productsData.find(x => x.id === "p9"); // Default gold
-      }
-    } else if (lower.includes("chair") || lower.includes("ergonomic")) {
-      matchedProduct = window.productsData.find(x => x.id === "p1");
-    } else if (lower.includes("headphone") || lower.includes("audio")) {
-      matchedProduct = window.productsData.find(x => x.id === "p2");
-    } else if (lower.includes("shoes") || lower.includes("sneaker") || lower.includes("stride")) {
-      matchedProduct = window.productsData.find(x => x.id === "p3");
-    } else if (lower.includes("light") || lower.includes("bar") || lower.includes("ambient")) {
-      matchedProduct = window.productsData.find(x => x.id === "p4");
-    } else if (lower.includes("projector") || lower.includes("vision")) {
-      matchedProduct = window.productsData.find(x => x.id === "p5");
-    } else if (lower.includes("bottle") || lower.includes("flask") || lower.includes("thermos")) {
-      matchedProduct = window.productsData.find(x => x.id === "p6");
-    } else if (lower.includes("desk") || lower.includes("oak")) {
-      matchedProduct = window.productsData.find(x => x.id === "p7");
-    } else if (lower.includes("band") || lower.includes("fit") || lower.includes("tracker")) {
-      matchedProduct = window.productsData.find(x => x.id === "p8");
-    }
-
-    if (matchedProduct) {
-      addToCart(matchedProduct.id, 1);
-      alert(`🎤 Voice Command: Added 1x "${matchedProduct.name}" to your shopping cart!`);
-    } else {
-      alert(`🎤 Voice Command: I heard "${transcript}", but couldn't verify which product to add. Try: "Add Jhumkas to cart" or "Add ergonomic chair to cart".`);
-    }
-  }
-
-  /* ==========================================================================
-     Gamification: Spin-to-Win Canvas Wheel Engine
+   Gamification: Spin-to-Win Canvas Wheel Engine
      ========================================================================== */
   const wheelCanvas = document.getElementById("wheel-canvas");
   const wheelCtx = wheelCanvas ? wheelCanvas.getContext("2d") : null;
